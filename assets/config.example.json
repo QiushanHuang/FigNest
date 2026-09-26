@@ -1,0 +1,17 @@
+{
+  "title": "实验结果 · 图片对照",
+  "description": "浏览原图、查看来源，并排比较；不会重新计算图内数据。",
+  "roots": [{"id": "study", "label": "实验图片", "path": "./images"}],
+  "filters": [
+    {"key": "metric", "label": "指标"},
+    {"key": "model", "label": "模型"}
+  ],
+  "groups": {"对照组": "用于确认基准行为", "实验组": "仅改变已记录的变量"},
+  "exclude": ["drafts", "*_thumbnail.*"],
+  "rules": [
+    {"glob": "control/*", "set": {"group": "对照组", "fields": {"model": "control"}}},
+    {"glob": "treatment/*", "set": {"group": "实验组", "fields": {"model": "treatment"}}},
+    {"glob": "*force*", "set": {"fields": {"metric": "力相关图（文件名标签）"}}}
+  ],
+  "overrides": {}
+}

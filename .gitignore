@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+build/
+dist/
+*.spec
+*.app/
+*.dmg
+*.zip
+*.sqlite3*
+server.json
+server.log
+demo-output/
+.pytest_cache/

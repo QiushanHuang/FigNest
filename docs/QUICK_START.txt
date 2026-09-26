@@ -1,0 +1,30 @@
+FigNest 4.1.0 · 图匣
+
+ENGLISH
+1. Drag 图匣.app into Applications, then open it.
+2. Choose Import to add pictures or a folder.
+3. Use Settings or Command-comma for display, import rules and storage.
+4. Select 2–4 images for comparison; export a library as offline HTML.
+
+Apple Silicon · macOS 13+ · Runtime included.
+Locally ad-hoc signed, not Apple-notarized. macOS may request first-launch approval.
+Verify downloads at https://github.com/QiushanHuang/FigNest/releases
+
+The live library is at ~/Pictures/ImageCollectionViewer.
+Copy that whole folder for a complete backup. Updating the app is separate from your data.
+
+中文
+1. 将 图匣.app 拖入 Applications 后打开。
+2. 点击“导入”，选择图片或文件夹。
+3. 通过“设置”或 Command-comma 调整显示、导入规则和存储。
+4. 选择 2–4 张图片并排比较，或把图库导出为离线 HTML。
+
+Apple Silicon · macOS 13+ · 自带运行环境。
+本地 ad-hoc 签名，尚未经过 Apple 公证；首次启动可能需要系统确认。
+请核对下载来源：https://github.com/QiushanHuang/FigNest/releases
+
+数据位于 ~/Pictures/ImageCollectionViewer。
+完整备份请复制整个目录。替换 App 不需要移动该数据目录。
+
+Qiushan (@QiushanHuang)
+© 2026 Qiushan Huang

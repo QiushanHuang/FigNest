@@ -1,0 +1,7 @@
+interface:
+  display_name: "图匣 · FigNest"
+  short_description: "管理多实验图库、改名与恢复，拖放图片和备注附件，支持 Finder 定位及离线导出"
+  brand_color: "#265D92"
+  default_prompt: "使用 $image-collection-viewer，把我指定的图片或文件夹加入图匣，保留个人整理记录，并导出离线 HTML。"
+policy:
+  allow_implicit_invocation: true
