@@ -14,6 +14,7 @@ from pathlib import Path, PurePosixPath
 import shutil
 import secrets
 import shlex
+import signal
 import sqlite3
 import subprocess
 import sys
@@ -1151,7 +1152,7 @@ def make_server(store, port=0):
                 if path in ('/workspace.css', '/workspace.js', '/workspace-core.js', '/settings.js'):
                     return self.send((ASSETS / path[1:]).read_bytes(), 'text/css' if path.endswith('.css') else 'application/javascript')
                 if path == '/health':
-                    return self.send(encoded({'store_id': store.store_id, 'version': VERSION}))
+                    return self.send(encoded({'store_id': store.store_id, 'version': VERSION, 'pid':os.getpid()}))
                 if path == '/api/state':
                     if self.headers.get('X-Viewer-Token') != token:
                         return self.send(encoded({'error': 'token required'}), code=403)
@@ -1371,6 +1372,46 @@ def running(store):
         return None
 
 
+def stop(store):
+    """Stop only a same-user FigNest service whose live identity matches this store."""
+    receipt_path = store.root / 'server.json'
+    if not receipt_path.exists():
+        return {'stopped': False, 'reason': 'no service receipt'}
+    receipt = json.loads(receipt_path.read_text())
+    pid = receipt.get('pid')
+    url = urlsplit(receipt.get('url', ''))
+    if type(pid) is not int or pid <= 1 or pid == os.getpid() or receipt.get('store_id') != store.store_id:
+        raise ValueError('service receipt identity does not match; no process was stopped')
+    if url.scheme != 'http' or url.hostname != '127.0.0.1' or not url.port or url.username or url.password or url.path != '/' or url.query:
+        raise ValueError('invalid local service address; no process was stopped')
+    try:
+        with urllib.request.urlopen(receipt['url'] + 'health', timeout=2) as response:
+            health = json.load(response)
+    except OSError:
+        return {'stopped': False, 'reason': 'service is not reachable; no signal sent'}
+    if health.get('store_id') != store.store_id or health.get('pid', pid) != pid:
+        raise ValueError('live service belongs to another store; no process was stopped')
+    process = subprocess.run(['/bin/ps', '-p', str(pid), '-o', 'uid=', '-o', 'args='], capture_output=True, text=True, check=False)
+    fields = process.stdout.strip().split(None, 1)
+    if len(fields) != 2 or fields[0] != str(os.getuid()):
+        raise ValueError('service process owner could not be verified; no signal sent')
+    command = fields[1]
+    if not command.endswith(f' --data {store.root} serve') or not any(name in command for name in ('library-backend', 'library.py')):
+        raise ValueError('receipt PID is not a FigNest service; no signal sent')
+    # The live store identity, account and program have all been checked.
+    os.kill(pid, signal.SIGTERM)
+    for _ in range(100):
+        with (store.root / '.server.lock').open('a') as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                time.sleep(.05)
+                continue
+            fcntl.flock(lock, fcntl.LOCK_UN)
+            return {'stopped': True, 'pid': pid, 'data_preserved': True}
+    raise ValueError('service has not released its lock; preserve files and inspect before retrying')
+
+
 def launch(store, open_browser=True):
     url = running(store)
     if not url:
@@ -1408,7 +1449,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--data', default=str(DEFAULT_DATA))
     sub = p.add_subparsers(dest='command', required=True)
-    for name in ('state', 'backup'):
+    for name in ('state', 'backup', 'stop'):
         sub.add_parser(name)
     imp = sub.add_parser('import')
     inp = imp.add_mutually_exclusive_group(required=True)
@@ -1435,6 +1476,7 @@ def main():
         store = Store(args.data)
         if args.command == 'state': result = store.state()
         elif args.command == 'backup': result = {'path': store.backup()}
+        elif args.command == 'stop': result = stop(store)
         elif args.command == 'import': result = store.import_directory(args.input, args.name, args.library_id, args.config,
             args.all_files, json.loads(Path(args.options).read_text()) if args.options else None)
         elif args.command == 'refresh': result = store.refresh(args.library_id)

@@ -12,6 +12,7 @@ First public release of FigNest, bringing the existing local library workspace t
 - General-file import and download cards; reusable presets and immutable offline HTML snapshots.
 - Independent generated folder roots for same-named libraries; descendant-aware export invalidation; transactional batch recovery deletion; retired import destinations no longer block import.
 - Portable source build, bilingual same-page README, user guide and release packages.
+- Scoped `stop` command for updates/backups: live store, account, process and data-path checks before stopping a service.
 
 No database schema change from local 4.0.0 (schema 6). Existing libraries, annotations, content versions and offline exports are retained.
 
@@ -27,5 +28,6 @@ FigNest 首个公开版本，将已有的本地素材工作台、Mac 原生设�
 - 普通文件导入、可复用规则和独立离线 HTML 导出。
 - 修复同名图库的自动目录隔离、子目录修改后的导出状态、批量回收事务和退役导入目标。
 - 中英同页 README、完整指南与可下载软件包。
+- 用于更新与备份的 `stop` 命令，先核对图库身份、账号、进程与数据路径。
 
 相较本地 4.0.0 不改变数据库 schema 6；既有图库、备注、内容版本和离线导出保留。

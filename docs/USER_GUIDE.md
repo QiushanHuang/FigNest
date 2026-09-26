@@ -49,7 +49,7 @@ The HTML contains the chosen image/general-file bytes and saved annotations. Ord
 
 **Permanently remove** and **Empty recovery** show a current item count and require a typed phrase. They remove FigNest records and unreferenced managed data, not the source files or previously exported HTML.
 
-For a complete backup, quit FigNest and preserve the entire `~/Pictures/ImageCollectionViewer` directory. The Settings database-backup command stores metadata only. Update the app separately from this data directory.
+For a complete backup, finish imports/exports, close the live viewers, run `python3 scripts/library.py stop`, and preserve the entire `~/Pictures/ImageCollectionViewer` directory. The Settings database-backup command stores metadata only. Update the app separately from this data directory. `stop` verifies the live store identity, process owner and exact data-directory command before sending a signal; it never deletes library files.
 
 ## 7. Command-line automation
 
@@ -107,7 +107,7 @@ HTML 内嵌所选图片、普通文件内容及保存的说明。普通文件以
 
 **永久删除**与**清空回收区**会显示当前数量并要求输入确认词，移除图库记录及不再使用的托管内容；不会删除原始来源文件或已经导出的独立 HTML。
 
-完整备份时，退出 FigNest 并复制整个 `~/Pictures/ImageCollectionViewer`。设置中的数据库备份只保存整理记录。更新应用与图库数据分开进行。
+完整备份时，完成导入导出、关闭实时窗口，运行 `python3 scripts/library.py stop`，再复制整个 `~/Pictures/ImageCollectionViewer`。设置中的数据库备份只保存整理记录。`stop` 会核对服务身份、进程所属账号和准确的数据目录后才停止，不删除图库文件。更新应用与图库数据分开进行。
 
 ### 7. 命令行自动化
 

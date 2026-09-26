@@ -126,6 +126,45 @@ class WorkspaceTests(unittest.TestCase):
         self.assertGreater(info['managed_bytes'],0)
         self.assertNotIn('token', info)
 
+    def test_stop_closes_verified_service_without_removing_data(self):
+        self.assertTrue(hasattr(library,'stop'),'scoped service stop missing')
+        import subprocess
+        child=subprocess.Popen([sys.executable,str(Path(library.__file__)),'--data',str(self.store.root),'serve'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True)
+        try:
+            receipt=json.loads(child.stdout.readline())
+            self.assertEqual(receipt['store_id'],self.store.store_id)
+            result=library.stop(self.store)
+            self.assertTrue(result['stopped'])
+            child.wait(timeout=5)
+            self.assertTrue(self.store.database.exists())
+        finally:
+            if child.poll() is None: child.terminate();child.wait(timeout=5)
+            child.stdout.close()
+
+    def test_stop_rejects_invalid_pid_before_any_signal(self):
+        self.assertTrue(hasattr(library,'stop'),'scoped service stop missing')
+        import os
+        (self.store.root/'server.json').write_text(json.dumps({'url':'http://127.0.0.1:1/','pid':os.getpid(),'store_id':self.store.store_id}))
+        with self.assertRaises(ValueError): library.stop(self.store)
+
+    def test_stop_rejects_receipt_pointing_at_another_live_store_pid(self):
+        import subprocess
+        other=library.Store(self.root/'other')
+        children=[]
+        try:
+            receipts=[]
+            for store in (self.store,other):
+                child=subprocess.Popen([sys.executable,str(Path(library.__file__)),'--data',str(store.root),'serve'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True)
+                children.append(child);receipts.append(json.loads(child.stdout.readline()))
+            receipts[0]['pid']=receipts[1]['pid']
+            (self.store.root/'server.json').write_text(json.dumps(receipts[0]))
+            with self.assertRaises(ValueError): library.stop(self.store)
+            self.assertTrue(all(child.poll() is None for child in children))
+        finally:
+            for child in children:
+                if child.poll() is None: child.terminate()
+                child.wait(timeout=5);child.stdout.close()
+
     def test_duplicate_content_is_reported_not_silently_dropped(self):
         self.store.import_uploads('Same', [upload('one.svg'), upload('two.svg')])
         state = self.store.state()

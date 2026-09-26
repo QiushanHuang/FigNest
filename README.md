@@ -69,8 +69,15 @@ The package is locally ad-hoc signed and **not Apple-notarized**. If macOS asks
 for approval on first launch, verify that you downloaded it from this repository,
 then follow Apple's [opening an app from an unidentified developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac) instructions.
 
-To update, quit FigNest and replace the application. Your library lives separately
-from the app. Keep the old app until you have opened the new version successfully.
+To update, finish imports/exports and close the live viewers, then stop this
+library's background service before replacing the app:
+
+```sh
+"/Applications/图匣.app/Contents/Resources/backend/library-backend" stop
+```
+
+Adjust the app path if you installed it elsewhere. Your library lives separately
+from the application. Keep the old app until the new version opens successfully.
 
 ### Lightweight browser edition
 
@@ -254,7 +261,13 @@ FigNest 把分散的图片整理成可以持续使用的图库：收集素材、
 安装包采用本地 ad-hoc 签名，**尚未经过 Apple 公证**。首次打开如需系统确认，
 请先核对下载来源，再按 Apple 的[打开来自未识别开发者的 App](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac)说明操作。
 
-更新时先退出 FigNest，再替换应用。图库数据单独保存，不在 App 包内；
+更新时先完成导入/导出并关闭实时看图窗口，再停止该图库的后台服务后替换应用：
+
+```sh
+"/Applications/图匣.app/Contents/Resources/backend/library-backend" stop
+```
+
+如果安装在其他目录，请调整应用路径。图库数据单独保存，不在 App 包内；
 建议确认新版本能打开后再处理旧版应用。
 
 #### 轻量网页版
