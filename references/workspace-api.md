@@ -35,7 +35,7 @@ The loopback server returns `api_version: 1` in state. Exact Host validation app
 | POST `/api/batch` | `ids` list, `action`: favorite/hidden booleans, add_tags/remove_tags arrays, or folder_id + present. Atomic validation/transaction. |
 | POST `/api/delete/batch` | `targets` list of kind/id. All targets are validated before an atomic recoverable deletion. |
 | POST `/api/import-options` | `library_id`, `options` object. |
-| POST `/api/preferences` | partial theme (`light`/`dark`), layout (`grid`/`list`), thumbnail (180–420), inspector boolean, sort. Stored in SQLite. |
+| POST `/api/preferences` | partial theme (`light`/`dark`), layout (`grid`/`list`), thumbnail (180–420), inspector boolean, annotation_expanded boolean, sort. Stored in SQLite. |
 | POST `/api/import/begin` | name, library_id, optional replace and options. Returns upload session. |
 | POST `/api/import/add` | id, files list of relative `path` + base64 `data`. |
 | POST `/api/import/commit` | id; validates then imports and applies rules. |
@@ -43,6 +43,19 @@ The loopback server returns `api_version: 1` in state. Exact Host validation app
 | POST `/api/export` | library_id/folder_id/include_hidden. Folder scopes include descendants and matching smart children. |
 
 `Store.folder`, `Store.batch`, `Store.set_import_options`, `Store.export` expose the same contracts to Python. Old `images` and `/media/ID` names are retained for compatibility, even for general assets. `asset_kind` is image/document/video/audio/file. General `/media/ID` downloads are octet-stream with attachment disposition and sandbox CSP. Original image preview stays in `<img>`, never inline SVG injection.
+
+### Original-pixel image markup (4.3)
+
+GET `/api/markup?id=IMAGE_ID` returns `document`, `revision`, and current `blob`.
+POST `/api/markup` takes `id`, `blob`, `revision`, and `document`;
+revision or content changes return HTTP 409. The live UI retains failed edits.
+Markup routes keep the existing loopback Host/Origin/token checks.
+
+Documents have `version: 1`, `width`, `height`, and a `shapes` array. The bounded
+validator rejects unknown types, non-finite/out-of-image coordinates, duplicate
+IDs, and oversized documents. See `scripts/markup.py` for exact limits. Markup is
+stored in additive `image_markup` rows; it does not mutate originals or change
+SQLite user_version 6. New offline exports embed saved documents read-only.
 
 ### Smart folder conditions
 

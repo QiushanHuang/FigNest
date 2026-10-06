@@ -1,5 +1,31 @@
 # Changelog
 
+## 4.3.0 — 2026-10-06
+
+Public update from 4.1.0, including the intervening local image-tool builds.
+
+- Original-pixel annotations: text, arrows, lines, rectangles, ellipses, freehand, horizontal/vertical guides and distance measurements; select/move/delete, undo/redo and one-action clear.
+- Resident pan, box zoom, pixel rulers, fit/100% and visibility controls; configurable annotation expansion and tool shortcuts.
+- Right-click 2–4-image comparison, adaptive/manual layout, explicit active image, optional relative zoom/pan linking, and single-image view with return to the same group.
+- Scoped search and filter chips, useful empty results, persistent selection actions, view selected/return, title preview, keyboard navigation, searchable folder membership and save feedback.
+- Explicit per-image/save-all actions, focused-text save shortcuts, independent save state, revision conflict protection and native quit/reload guards.
+- Marked PNG and annotation JSON export; saved marks in new read-only offline HTML snapshots.
+- Additive `image_markup` table; SQLite user_version stays 6, original files remain unchanged.
+- Runtime-aware macOS deployment metadata, current dependency notices, expanded CI and bilingual guides. The 4.3.0 binary requires macOS 27+ / Apple Silicon; source browser use remains Python 3.10+.
+
+### 中文
+
+相较公开 4.1.0，包含中间本地版本的图片工具和便利性改进。
+
+- 原始像素标注：文字、箭头、直线、矩形、椭圆、画笔、水平/垂直参考线和测距；移动、删除、撤销/重做与一键清除。
+- 平移、框选放大、像素标尺、适应/100% 和显隐常驻；可选标注默认展开与工具快捷键。
+- 右键 2–4 图比较、自适应/手动布局、当前图提示、相对视图联动、单独查看后返回同组。
+- 搜索范围与筛选条目、无结果恢复、常驻选择栏、查看已选/返回、标题预览、键盘导航和文件夹搜索/保存反馈。
+- 单图/全部保存、输入框内保存快捷键、独立保存状态、版本冲突保护及原生退出/重新载入保护。
+- 标注 PNG、标注 JSON 导出，新离线 HTML 只读显示已保存标注。
+- 新增 image_markup 表，SQLite user_version 保持 6，不改写原始文件。
+- 根据实际运行环境设置最低系统版本，补齐许可证、CI 与中英文指南。4.3.0 二进制包要求 macOS 27+ / Apple Silicon，源码网页版仍支持 Python 3.10+。
+
 ## 4.1.0 — 2026-09-26
 
 First public release of FigNest, bringing the existing local library workspace together with native Mac settings and distribution packages.

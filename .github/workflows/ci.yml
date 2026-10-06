@@ -18,6 +18,8 @@ jobs:
           node-version: '22'
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - run: node tests/test_workspace.js
+      - run: node tests/test_image_tools.js
+      - run: node tests/test_ux.js
       - run: node tests/test_settings.js
       - run: node tests/test_drop.js
-      - run: node --check assets/workspace.js && node --check assets/settings.js
+      - run: node --check assets/workspace.js && node --check assets/settings.js && node --check assets/image-tools.js && node --check assets/image-tools-core.js

@@ -3,6 +3,9 @@
 
 [English](#english) · [简体中文](#中文)
 
+The 4.3.0 Mac download requires Apple Silicon and macOS 27+ and includes its runtime.
+The source browser edition needs Python 3.10+.
+
 ## 1. Start a library
 
 Click **＋ 导入 / Import**. Choose individual files or a directory, select an existing library or name a new one, then import. The result reports new, updated and skipped items. Reimport into the same library to retain its curation.
@@ -12,15 +15,25 @@ Choose **Keep directory hierarchy** to create virtual folders matching the selec
 ## 2. Organize and find
 
 - Use the sidebar **＋** beside Folders to create a manual or smart folder. Choose a parent to make a subfolder.
-- Click a thumbnail once to select and inspect, or double-click/press Space to preview. Clicking the title reveals its source or managed copy in Finder.
+- Click a thumbnail once to select and inspect, or double-click/press Space to preview. Clicking the title opens the preview. Use More or the right-click menu for Finder access.
 - Check boxes or use ⌘A for the current filtered result. Shift-select covers a continuous range. Selection remains when switching libraries.
-- Use the batch bar for folders, tags, favorites and hiding. Right-click a card or folder for contextual actions.
-- Search matches titles, paths, notes, tags and metadata. Use the filter panel for exact metadata values. Save suitable conditions as a smart folder.
+- The bottom selection bar stays available while scrolling. View all selected items, including ones outside the current filters, then return to your original view. Use folders, tags, favorites or More for batch actions. The folder picker supports search and partial-membership feedback.
+- Right-click a card or folder for contextual actions. Compare appears when 2–4 selected items are images. Permanent removal is kept in recovery.
+- Search matches titles, paths, notes, tags and metadata within the displayed scope. Remove filter chips or clear filters; an empty result can search all assets with the same keywords. Use **保存筛选 / Save filters** to create a smart folder.
+- Arrow keys and Home/End move between visible items; Enter/Space previews the focused item.
 - Smart folders match all their selected conditions; manual membership is managed separately. The duplicate-content view indicates identical bytes, not visually similar images.
 
 ## 3. Compare and annotate
 
-Select 2–4 image items and click **Compare** or press ⌘Enter. Each panel keeps its title and source label. Switch between fit and original size. Single-image preview supports previous/next navigation.
+Select 2–4 image items, then **right-click → 并排比较 / Compare**, click Compare in the persistent selection bar, or press ⌘Enter. Click a pane to make it the current image; a blue outline identifies it. The shared toolbar controls that image. Choose automatic/one-row/two-column layout (two columns for 3–4 images), optional relative zoom/pan linking, and fill-window view. **View alone → Return to comparison** keeps the same group and layout; previous/next stays within that comparison.
+
+Pan (**V**), box zoom (**Z**), pixel distance (**R**), fit, 100%, pixel rulers and annotation visibility remain available with the annotation panel closed. Hold Space for temporary pan. Expand **标注工具 / Annotation tools** for arrows (**A**), lines (**L**), rectangles (**M**), ellipses (**O**), freehand (**B**), text (**T**), horizontal (**H**) and vertical (**G**) reference lines. These keys act on the current image and do not interrupt typing in text fields.
+
+For text, enter the content and click the image to place it; Escape cancels an unplaced draft. Draw inside the image. Use Select to move a mark, Delete to remove the selected mark, and Undo/Redo to recover edits. **Clear annotations** clears the current image and can be undone. Choose **Expand annotations by default** in the panel or Display settings; observation tools stay available either way.
+
+Save explicitly with **保存标注 / Save annotations** or ⌘S / Ctrl+S, including when the text field has focus. Comparison offers **保存全部 / Save all**. Save state is separate from coordinates and mode. A close/navigation/quit/reload guard protects unsaved edits. On an error or version conflict, keep the editor open; failed saves preserve edits. An unplaced text draft must be placed or canceled before saving.
+
+Export a marked PNG or annotation JSON for an independent copy of the marks. Saved annotations use original decoded pixel coordinates and remain separate from source bytes. Pixel distances are not calibrated physical measurements. New offline HTML exports show saved marks read-only; editing or creating marks requires the live library.
 
 Open **Notes and attachments** from the inspector or context menu. Save the note explicitly; dragged note files are saved as attachments. Right-click a source-group button within a library to favorite or annotate the whole group.
 
@@ -30,7 +43,7 @@ The toolbar button, sidebar button and native **FigNest → Settings… / ⌘,**
 
 | Tab | Options |
 | --- | --- |
-| Display | Light/dark appearance, grid/list, thumbnail size, sorting, inspector |
+| Display | Light/dark appearance, grid/list, thumbnail size, sorting, inspector, default annotation expansion |
 | Import & export | Per-library target folder, tags, directory hierarchy, automatic HTML |
 | Storage | Data location, managed-file/database sizes, open folder, database backup |
 | About | Version, build, copyright and maintainer |
@@ -61,6 +74,9 @@ Run `python3 scripts/library.py --help`. Use `state` for exact IDs, `import` or 
 
 [English](#english) · [简体中文](#中文)
 
+4.3.0 Mac 下载包要求 Apple Silicon 与 macOS 27+，自带运行环境。
+源码网页版需要 Python 3.10+。
+
 ### 1. 建立图库
 
 点击**＋ 导入**，选择文件或目录，指定已有图库或填写新名称。导入结果会显示新增、更新和跳过数量。更新已有集合时请选择同一个图库，以保留之前的整理。
@@ -70,15 +86,25 @@ Run `python3 scripts/library.py --help`. Use `state` for exact IDs, `import` or 
 ### 2. 整理和查找
 
 - 点击侧栏文件夹旁的 **＋**，建立手动或智能文件夹；选择上级目录即可创建子文件夹。
-- 单击缩略图选择并查看详情，双击或空格预览。点击标题在 Finder 定位原文件或图库副本。
+- 单击缩略图选择并查看详情，点击标题、双击或空格预览。通过更多或右键菜单在 Finder 定位原文件或图库副本。
 - 通过复选框或 ⌘A 批量选择；Shift 连续多选。切换图库仍保留选择，方便跨项目比较。
-- 批量栏可操作文件夹、标签、收藏和隐藏。图片与目录都支持右键菜单。
-- 搜索匹配标题、路径、备注、标签和参数；筛选面板提供参数精确匹配，可保存为智能文件夹。
+- 底部选择栏随滚动常驻，可查看筛选范围外的已选项，再返回原页面。支持文件夹、标签、收藏和更多批量操作；文件夹选择支持搜索与部分成员提示。
+- 图片与目录支持右键菜单。选中 2–4 张图片时可直接右键比较；永久删除入口留在回收区。
+- 搜索在所显示的范围内匹配标题、路径、备注、标签和参数。可移除筛选条目或清空条件；无结果时保留关键词搜索全部素材。**保存筛选**建立智能文件夹。
+- 方向键与 Home/End 在可见素材中移动，Enter / 空格预览当前焦点项。
 - 智能文件夹要求同时满足选中的条件；手动分类单独管理。“重复内容”表示字节完全相同，不代表视觉相似。
 
-### 3. 对比和备注
+### 3. 对比、标注和备注
 
-选择 2–4 张图片，点击**并排比较**或按 ⌘Enter。各面板保留名称和来源，可切换适应窗口或原始尺寸。单图预览支持前后切换。
+选择 2–4 张图片，通过**右键 → 并排比较**、底部选择栏或 ⌘Enter 进入。点击面板使其成为当前图，蓝色边框明确操作目标，共享工具栏控制该图。支持自动/一行/两列布局（两列适用于 3–4 张图）、相对缩放和平移联动、铺满窗口。**单独查看 → 返回比较**保留图片组与布局，前后切换只在当前比较组内进行。
+
+平移（**V**）、框选放大（**Z**）、像素测距（**R**）、适应窗口、100%、像素标尺和标注显隐常驻；按住空格可临时平移。展开**标注工具**后，可用箭头（**A**）、直线（**L**）、矩形（**M**）、椭圆（**O**）、画笔（**B**）、文字（**T**）、水平（**H**）和垂直（**G**）参考线。快捷键作用于当前图片，输入文字时不会抢占单键。
+
+文字输入后点击图片放置，Escape 取消未放置草稿。绘制需从图片内开始。选择工具可移动标注，Delete 删除选中的标注，撤销/重做恢复修改。**清除标注**一键清空当前图片，可撤销。在面板或显示设置里选择**默认展开标注工具**，收起后观察工具仍可用。
+
+点击**保存标注**或 ⌘S / Ctrl+S 明确保存，文字框内同样有效；比较支持**保存全部**。保存状态与坐标、操作模式分开显示。关闭、切换、退出和重新载入前保护未保存修改；保存错误或版本冲突会保留编辑内容。未放置的文字须先放置或取消再保存。
+
+可导出标注 PNG 或 JSON，独立保留标注数据。标注使用解码图片的原始像素坐标，单独保存，不改写源文件；像素距离不等于标定后的物理尺寸。新导出的离线 HTML 只读显示已保存标注，编辑标注需要实时图库。
 
 在详情或右键菜单里打开**备注与附件**。文字备注需要明确保存，拖入备注区的文件会成为附件。在图库组别按钮上右键，可收藏或备注整个组。
 
@@ -88,7 +114,7 @@ Run `python3 scripts/library.py --help`. Use `state` for exact IDs, `import` or 
 
 | 分类 | 内容 |
 | --- | --- |
-| 显示 | 深浅外观、网格/列表、缩略图、排序、详情面板 |
+| 显示 | 深浅外观、网格/列表、缩略图、排序、详情面板、标注默认展开 |
 | 导入与导出 | 各图库的默认目录、标签、目录层级和自动 HTML |
 | 存储 | 数据位置、托管文件和数据库大小、打开目录、数据库备份 |
 | 关于 | 版本、构建号、版权与维护者 |

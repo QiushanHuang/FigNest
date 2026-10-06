@@ -18,6 +18,15 @@ def upload(path, data=SVG):
 
 
 class WorkspaceTests(unittest.TestCase):
+    def test_annotation_panel_default_is_persisted_and_validated(self):
+        self.assertIs(self.store.state()['preferences'].get('annotation_expanded'),False)
+        self.store.set_preferences({'annotation_expanded':True})
+        self.assertIs(library.Store(self.store.root).state()['preferences']['annotation_expanded'],True)
+        self.store.set_preferences({'annotation_expanded':False})
+        self.assertIs(self.store.state()['preferences']['annotation_expanded'],False)
+        with self.assertRaises(ValueError):
+            self.store.set_preferences({'annotation_expanded':'false'})
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

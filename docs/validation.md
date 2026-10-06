@@ -1,3 +1,25 @@
+# Release acceptance — 4.3.0
+
+Verified on macOS 27 / Apple Silicon on 2026-10-06 with isolated synthetic libraries, then the installed app was checked against an existing local store.
+
+| Question | Evidence |
+| --- | --- |
+| Can people recover from a narrow or empty search? | Current scope, removable filters, clear-all and wider search retaining the query checked in the live browser. |
+| Are selection actions reachable while scrolling? | Bottom dock, hidden-selection counts, view selected/return, retained keyboard focus and folder search/membership feedback checked. Same-viewport before/after screenshots inspected. |
+| Can 2–4 images be compared without losing the group? | Adaptive/manual layout, nonzero pane dimensions, relative zoom/pan linking, active image and view alone/return checked. |
+| Do observation tools remain available? | Shared toolbar with collapsed annotation panel; shortcuts/help; 390×844 layout checked and temporary viewport override reset. |
+| Can marks be cleared and text drafts retained? | Clear/undo, drawing bounds, automatic panel expansion, default preference, unplaced-text close guard and Escape cancellation checked. |
+| Is saving reliable and visible? | Focused-text ⌘S in the packaged Mac app, save-all, independent coordinates/save state, actual HTTP 409 conflict with retained edits, and inline leave-dialog error checked. |
+| Do exports contain saved marks? | Native save dialog produced a valid marked PNG; offline HTML showed saved marks with snapshot state and no save controls. |
+| Does the installed update retain data? | Consistent pre-update SQLite backup, all existing table records compared before/after, integrity and foreign-key checks passed; original image opened in the installed 4.3.0 app. |
+| Is package compatibility stated accurately? | Bundled Mach-O requirements inspected; maximum is macOS 27.0. Info.plist and public docs corrected, app root re-signed, deep/strict verification passed. |
+
+**69 Python tests** and **5 Node suites** passed locally, including native menu/download policy, deployment metadata, geometry, history, concurrency and UX rules. JavaScript syntax checks passed. CI runs the source suites on Linux and macOS; see the actual [workflow results](https://github.com/QiushanHuang/FigNest/actions/workflows/ci.yml).
+
+The public binary is Apple Silicon / macOS 27+, ad-hoc signed and not Apple-notarized. Pixel measurements are not physical calibration; PNG export caps at 64 million pixels. Offline HTML remains read-only. Synthetic screenshots contain no personal library content. This is focused release acceptance, not a full accessibility certification or performance benchmark.
+
+---
+
 # Release acceptance — 4.1.0
 
 Verified on macOS 27 / Apple Silicon on 2026-09-26. Acceptance follows user-visible outcomes, not just a test total.

@@ -1,12 +1,10 @@
 # Validation
 
-See [release acceptance](../docs/validation.md) for the current verification scope and limits. The reproducible suites are:
+Current release acceptance and practical limits are documented in
+[release validation](../docs/validation.md). Automated checks and native build
+instructions are in [Contributing](../CONTRIBUTING.md).
 
-```sh
-python3 -m unittest discover -s tests -p 'test_*.py'
-node tests/test_workspace.js
-node tests/test_settings.js
-node tests/test_drop.js
-```
-
-Use a temporary datastore for mutation tests. The optional [demo generator](../examples/create_demo.py) creates synthetic charts and a separate library from explicit new output/data paths. It does not read a personal image collection.
+Use temporary synthetic stores for feature tests. Do not write test marks, rename
+assets or test permanent removal against a personal library. A passing source
+suite does not establish installed-app behavior; verify the actual package and
+preserve data before an update.

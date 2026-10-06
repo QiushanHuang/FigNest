@@ -2,12 +2,14 @@ import AppKit
 import Foundation
 import WebKit
 
-final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WKNavigationDelegate {
+final class ViewerApplication: NSObject, NSApplicationDelegate, NSWindowDelegate, WKUIDelegate, WKNavigationDelegate, WKDownloadDelegate {
     private var window: NSWindow?
     private var webView: WKWebView?
     private var serverPort: Int?
     private var pageReady = false
     private var pendingSettings = false
+    private var approvedClose = false
+    private var checkingEdits = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
@@ -46,6 +48,7 @@ final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WK
         let frame = NSRect(x: 0, y: 0, width: 1220, height: 800)
         let window = NSWindow(contentRect: frame, styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         window.title = "FigNest · 图匣"
+        window.delegate = self
         window.minSize = NSSize(width: 720, height: 520)
         window.center()
         window.contentView = web
@@ -56,8 +59,53 @@ final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WK
     }
 
     @objc private func reloadPage(_ sender: Any?) {
-        pageReady = false
-        webView?.reload()
+        checkUnsaved { [weak self] proceed in
+            if proceed { self?.pageReady = false; self?.webView?.reload() }
+        }
+    }
+
+    private func checkUnsaved(_ completion: @escaping (Bool) -> Void) {
+        guard let web = webView, !checkingEdits else { completion(false); return }
+        checkingEdits = true
+        web.evaluateJavaScript("window.figNestImageEdits?.dirty() ?? false") { [weak self] value, error in
+            guard let self else { completion(false); return }
+            guard error == nil else { self.checkingEdits = false; completion(false); return }
+            guard value as? Bool == true else { self.checkingEdits = false; completion(true); return }
+            let alert = NSAlert()
+            alert.messageText = "图片标注尚未保存"
+            alert.informativeText = "保存标注后继续，或返回图片继续编辑。"
+            alert.addButton(withTitle: "保存并继续")
+            alert.addButton(withTitle: "继续编辑")
+            alert.addButton(withTitle: "放弃编辑")
+            let response = alert.runModal()
+            if response == .alertFirstButtonReturn {
+                web.callAsyncJavaScript("return await window.figNestImageEdits.save();", arguments: [:], in: nil, in: .page) { result in
+                    self.checkingEdits = false
+                    switch result {
+                    case .success(let value): completion(value as? Bool == true)
+                    case .failure(let error): self.showError(error.localizedDescription); completion(false)
+                    }
+                }
+            } else if response == .alertThirdButtonReturn {
+                web.evaluateJavaScript("window.figNestImageEdits.discard();") { _, error in
+                    self.checkingEdits = false; completion(error == nil)
+                }
+            } else { self.checkingEdits = false; completion(false) }
+        }
+    }
+
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        if approvedClose { return true }
+        checkUnsaved { [weak self] proceed in
+            if proceed { self?.approvedClose = true; sender.performClose(nil) }
+        }
+        return false
+    }
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        if approvedClose { return .terminateNow }
+        checkUnsaved { proceed in sender.reply(toApplicationShouldTerminate: proceed) }
+        return .terminateLater
     }
 
     @objc private func showAbout(_ sender: Any?) {
@@ -92,7 +140,9 @@ final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WK
     private func startOrReuseServer() -> URL? {
         guard let resources = Bundle.main.resourceURL else { return nil }
         let backend = resources.appendingPathComponent("backend/library-backend")
-        let data = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Pictures/ImageCollectionViewer")
+        // Optional isolated development/test store; normal launch uses the existing personal library.
+        let data = ProcessInfo.processInfo.environment["FIGNEST_DATA_DIR"].map { URL(fileURLWithPath: $0) } ??
+            FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Pictures/ImageCollectionViewer")
         let process = Process()
         process.executableURL = backend
         process.arguments = ["--data", data.path, "launch", "--no-open"]
@@ -152,6 +202,11 @@ final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WK
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let requestURL = navigationAction.request.url else { decisionHandler(.cancel); return }
+        if navigationAction.shouldPerformDownload &&
+            ImageToolPolicy.allowsDownload(requestURL, port: serverPort) {
+            decisionHandler(.download)
+            return
+        }
         if requestURL.host == "127.0.0.1",
            requestURL.port == serverPort,
            requestURL.scheme == "http" {
@@ -163,6 +218,24 @@ final class ViewerApplication: NSObject, NSApplicationDelegate, WKUIDelegate, WK
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return true
+    }
+
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+        download.delegate = self
+    }
+
+    func download(_ download: WKDownload, decideDestinationUsing response: URLResponse,
+                  suggestedFilename: String, completionHandler: @escaping (URL?) -> Void) {
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = URL(fileURLWithPath: suggestedFilename).lastPathComponent
+        panel.directoryURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        if let window {
+            panel.beginSheetModal(for: window) { response in completionHandler(response == .OK ? panel.url : nil) }
+        } else { completionHandler(panel.runModal() == .OK ? panel.url : nil) }
+    }
+
+    func download(_ download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
+        if (error as NSError).code != NSURLErrorCancelled { showError(error.localizedDescription) }
     }
 }
 

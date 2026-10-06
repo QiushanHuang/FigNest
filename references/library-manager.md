@@ -2,7 +2,7 @@
 
 ## Two entrances, one library
 
-Open the installed FigNest app, or run `python3 scripts/library.py launch` for the lightweight HTML interface. Both connect to the same loopback service and `~/Pictures/ImageCollectionViewer` database; refresh the other view after an edit. The macOS App bundles its own Python backend and WebKit window. A separately exported offline HTML is a portable read-only snapshot, not a live database editor.
+Open the installed 图匣 / FigNest app, or run `python3 scripts/library.py launch` for the lightweight browser interface. Both connect to the same loopback service and `~/Pictures/ImageCollectionViewer` database; refresh the other view after an edit. The macOS App bundles its own Python backend and WebKit window. The HTML interface needs only a current browser and a running service. A separately exported offline HTML is a portable read-only snapshot, not a live database editor.
 
 ## Entrypoints
 
@@ -47,7 +47,7 @@ Image and source-group favorites are separate. Hide is reversible. Notes save ex
 
 The context menu on a picture, library or custom category offers common actions. "软件内删除" moves an image, category, library, or note attachment to 图匣's recovery area; restore it there. "永久删除" is available on an active item or a recovered-bin item. "清空回收区" permanently removes all items in that area, including images and attachments belonging to trashed libraries. Preview counts and a typed phrase gate each permanent action. A changed target invalidates the earlier preview. Permanent removal deletes catalogue records, versions and unreferenced app-managed bytes; it does not touch original source files, separately exported HTML snapshots, or existing database backups. Those independent copies must be reviewed separately if the user needs full erasure. No real user item is purged during feature testing.
 
-Renaming retains stable source identity, notes and categories. Clicking an image title asks Finder to reveal the unchanged original when available; when it is unavailable or differs, Finder selects a named managed copy. Browser-dropped files use managed copies because browsers do not disclose original filesystem paths. Keep an older application copy until an update has been verified.
+Renaming retains the stable source identity, notes and categories. Clicking an image title opens its preview. Finder access is in the More/context menu: it reveals the unchanged original when available, otherwise a named managed copy. Dropped images always use managed copies because browsers do not disclose original filesystem paths. Backup `.app` versions are kept in `~/Pictures/ImageCollectionViewer/app-backups/`.
 
 Imports create an immutable offline HTML when the per-library auto-export preset is enabled (default). Manual export can cover a nested subtree or smart query. General-file bytes are embedded for download, not active in-page execution. Editing metadata marks older library exports stale rather than rewriting distributed copies. History reports scope/count/time. Import can commit even if export fails: retry export, not import-as-new.
 

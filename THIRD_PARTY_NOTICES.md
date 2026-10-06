@@ -1,13 +1,28 @@
 # Third-party notices
 
-FigNest's distributed macOS application includes CPython 3.10.4 and a PyInstaller 5.1 bootloader. Their original copyright and license notices are retained:
+The FigNest 4.3.0 macOS package includes the following runtime components. Original
+license and copyright notices are retained under `assets/licenses` in this source
+package and under `Contents/Resources/assets/licenses` in the application.
+`Contents/Resources/THIRD_PARTY_NOTICES.md` accompanies the application.
 
-- [Python 3.10.4 license](assets/licenses/Python-3.10.4-LICENSE.txt) — Python Software Foundation and listed contributors.
-- [PyInstaller 5.1 license and bootloader exception](assets/licenses/PyInstaller-5.1-COPYING.txt).
-- [OpenSSL 1.1.1n license](assets/licenses/OpenSSL-1.1.1n-LICENSE.txt), for the bundled SSL/crypto libraries used by CPython.
+| Component | Version / notice |
+| --- | --- |
+| CPython | 3.14.7 — [PSF license and historical notices](assets/licenses/Python-3.14.7-LICENSE.txt) |
+| PyInstaller bootloader | 6.22.3 — [COPYING and bootloader exception](assets/licenses/PyInstaller-6.22.3-COPYING.txt) |
+| OpenSSL | 3.6.4 — [Apache 2.0 license](assets/licenses/OpenSSL-3.6.4-LICENSE.txt) |
+| Expat incorporated in CPython | [MIT notice](assets/licenses/CPython-Expat-COPYING.txt) |
+| mpdecimal | 4.0.1 — [copyright and BSD notice](assets/licenses/Mpdecimal-COPYRIGHT.txt) |
+| Zstandard | 1.5.7 — [BSD license](assets/licenses/Zstandard-BSD-LICENSE.txt) |
+| liblzma / XZ Utils | 5.8.4 — [0BSD license](assets/licenses/XZ-0BSD-LICENSE.txt), [component overview](assets/licenses/XZ-COPYING.txt) |
+| SQLite | 3.53.4 — [public-domain dedication](https://www.sqlite.org/copyright.html) |
 
-The application uses Apple's AppKit and WebKit frameworks supplied by macOS. Release-package runtime dependencies and their notices are included under `assets/licenses` and in the application's backend assets.
+CPython and its dependencies are bundled by PyInstaller with library paths relocated
+for standalone operation. FigNest does not patch their source code. System libraries,
+AppKit and WebKit are supplied by macOS. The current packaged runtime requires
+macOS 27+ on Apple Silicon; a source build inherits its selected runtime requirements.
 
-The icon is a project-created AI-assisted asset, not copied from another image manager. Other products mentioned in the documentation retain their own names and rights.
+The earlier Python 3.10.4, PyInstaller 5.1 and OpenSSL 1.1.1n notice files remain for
+the historical 4.1.0 distribution. They do not describe the current runtime.
 
-These notices describe the distributed 4.1.0 runtime. A source build uses the Python/PyInstaller environment selected by its builder.
+The icon is a project-created AI-assisted asset, not copied from another image
+manager. Other products mentioned in documentation retain their names and rights.

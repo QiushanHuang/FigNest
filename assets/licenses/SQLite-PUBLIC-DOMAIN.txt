@@ -1,0 +1,2 @@
+SQLite 3.53.4 is dedicated to the public domain by its authors.
+Official dedication and redistribution information: https://www.sqlite.org/copyright.html

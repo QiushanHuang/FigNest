@@ -8,7 +8,8 @@ The runtime backend uses Python 3.10+ and the standard library. The live interfa
 | `assets/workspace-core.js` | Pure selection/filtering behavior |
 | `assets/workspace.js`, `settings.js` | Browser interaction and settings |
 | `assets/library.html`, `workspace.css` | Application shell and styling |
-| `assets/viewer.html` | Standalone offline viewer |
+| `assets/image-tools*.js`, `image-tools.css`, `scripts/markup.py` | Original-pixel geometry, image editor, document validation and revision checks |
+| `assets/viewer.html` | Standalone offline viewer with read-only saved marks |
 | `native/` | Mac menu, window, About panel and app builder |
 | `tests/` | Synthetic regression suites; use temporary stores |
 
@@ -17,13 +18,15 @@ The runtime backend uses Python 3.10+ and the standard library. The live interfa
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/test_workspace.js
+node tests/test_image_tools.js
+node tests/test_ux.js
 node tests/test_settings.js
 node tests/test_drop.js
 ```
 
 Native menu checks run on macOS. Before a release, verify the actual packaged App, settings with text-field focus, persistence after reopening, Finder reveal, mixed-file import, comparison, and offline export. Keep tests separate from a personal library.
 
-Version/build/ownership data live in `assets/app-info.json`. Build with a Python environment containing PyInstaller and Xcode Command Line Tools. The builder uses system `sips`, `iconutil` and `codesign`; no third-party image converter is required.
+Version/build/ownership data live in `assets/app-info.json`. Build with a Python environment containing PyInstaller and Xcode Command Line Tools. The builder derives the minimum macOS version from every bundled Mach-O binary, so the native deployment target alone does not promise runtime compatibility. Keep third-party notices current with the actual packaged runtime. The builder uses system `sips`, `iconutil` and `codesign`; no third-party image converter is required.
 
 Keep source files read-only during organization. Preserve database migrations, backup paths and exact import identities. General files must never be injected into the page as active HTML. Network access is loopback-only; retain the Host, Origin and token checks.
 

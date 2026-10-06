@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,28 @@ def run(command):
     subprocess.run(command, check=True)
 
 
+def minimum_system_version(app, floor='13.0'):
+    """Include the deployment requirements of Python and every bundled dylib."""
+    versions = [floor]
+    magic = {b'\xcf\xfa\xed\xfe', b'\xfe\xed\xfa\xcf', b'\xce\xfa\xed\xfe',
+             b'\xfe\xed\xfa\xce', b'\xca\xfe\xba\xbe', b'\xbe\xba\xfe\xca',
+             b'\xca\xfe\xba\xbf', b'\xbf\xba\xfe\xca'}
+    for binary in Path(app).rglob('*'):
+        if not binary.is_file() or binary.is_symlink():
+            continue
+        with binary.open('rb') as file:
+            if file.read(4) not in magic:
+                continue
+        info = subprocess.check_output(['xcrun', 'vtool', '-show-build', str(binary)], text=True)
+        for block in re.split(r'Load command \d+', info):
+            field = 'minos' if 'LC_BUILD_VERSION' in block else 'version' if 'LC_VERSION_MIN_MACOSX' in block else None
+            if field:
+                value = re.search(r'^\s*' + field + r'\s+(\d+(?:\.\d+)+)\s*$', block, re.M)
+                if value:
+                    versions.append(value.group(1))
+    return max(versions, key=lambda value: tuple(int(part) for part in value.split('.')))
+
+
 def sync_ui(output):
     output = Path(output).expanduser().resolve()
     info = output / 'Contents/Info.plist'
@@ -27,14 +50,16 @@ def sync_ui(output):
         raise RuntimeError('UI sync requires the installed 图匣 application')
     if plistlib.loads(info.read_bytes()).get('CFBundleShortVersionString') != app_info()['version']:
         raise RuntimeError('Version changes require a full backend build before UI-only updates')
-    target = output / 'Contents/Resources/backend/assets'
-    if not (target / 'library.html').is_file():
+    backend = output / 'Contents/Resources/backend'
+    target = next((folder for folder in (backend / 'assets', backend / '_internal/assets')
+                   if (folder / 'library.html').is_file()), None)
+    if target is None:
         raise RuntimeError('installed HTML asset is missing')
     history = output / 'Contents/Resources/previous-ui'
     history.mkdir(exist_ok=True)
     previous = history / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')
     previous.mkdir()
-    for name in ('library.html', 'workspace.css', 'workspace.js', 'workspace-core.js', 'settings.js', 'viewer.html', 'logo.svg', 'icon.png', 'app-info.json'):
+    for name in ('library.html', 'workspace.css', 'workspace.js', 'workspace-core.js', 'settings.js', 'viewer.html', 'logo.svg', 'icon.png', 'app-info.json', 'image-tools-core.js', 'image-tools.js', 'image-tools.css'):
         if (target / name).exists():
             shutil.copy2(target / name, previous / name)
         shutil.copy2(SKILL / 'assets' / name, target / name)
@@ -63,7 +88,7 @@ def build(output, replace=False):
         if link.is_symlink() and not link.resolve().is_relative_to(app_resources / 'backend'):
             raise RuntimeError('Standalone backend contains an external symlink: ' + str(link))
     run(['/usr/bin/swiftc', '-target', 'arm64-apple-macosx13.0', '-framework', 'AppKit', '-framework', 'WebKit',
-         str(SKILL / 'native/AppMenu.swift'), str(SKILL / 'native/MacViewer.swift'), '-o', str(app_macos / '图匣')])
+         str(SKILL / 'native/AppMenu.swift'), str(SKILL / 'native/ImageToolPolicy.swift'), str(SKILL / 'native/MacViewer.swift'), '-o', str(app_macos / '图匣')])
     iconset = stage / 'AppIcon.iconset'
     iconset.mkdir()
     for side in (16, 32, 128, 256, 512):
@@ -73,11 +98,15 @@ def build(output, replace=False):
              '--out', str(iconset / f'icon_{side}x{side}@2x.png')])
     run(['/usr/bin/iconutil', '-c', 'icns', str(iconset), '-o', str(app_resources / 'AppIcon.icns')])
     release = app_info()
+    notices = SKILL / 'THIRD_PARTY_NOTICES.md'
+    if notices.is_file():
+        shutil.copy2(notices, app_resources / notices.name)
+        shutil.copytree(SKILL / 'assets/licenses', app_resources / 'assets/licenses')
     info = {'CFBundleName': release['name'], 'CFBundleDisplayName': release['display_name'],
             'CFBundleExecutable': '图匣', 'CFBundleIdentifier': 'local.joshua.tuxia',
             'CFBundleIconFile': 'AppIcon', 'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': release['version'],
             'CFBundleVersion': release['build'], 'NSHumanReadableCopyright': release['copyright'],
-            'FigNestRepositoryURL': release['repository'], 'LSMinimumSystemVersion': '13.0',
+            'FigNestRepositoryURL': release['repository'], 'LSMinimumSystemVersion': minimum_system_version(app),
             'NSHighResolutionCapable': True}
     with (app / 'Contents/Info.plist').open('wb') as file:
         plistlib.dump(info, file)

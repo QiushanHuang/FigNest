@@ -22,11 +22,12 @@ import threading
 import time
 import tempfile
 from types import SimpleNamespace
-from urllib.parse import urlsplit, quote
+from urllib.parse import urlsplit, quote, parse_qs
 import urllib.request
 import uuid
 import webbrowser
 import gallery
+from markup import MarkupConflict, validate_document
 
 DEFAULT_DATA = Path.home() / 'Pictures/ImageCollectionViewer'
 ASSETS = Path(getattr(sys, '_MEIPASS', Path(__file__).resolve().parents[1])) / 'assets'
@@ -36,7 +37,7 @@ gallery.TEMPLATE = ASSETS / 'viewer.html'
 MAX_BYTES = 256 * 1024 ** 2
 UNSET = object()
 IMPORT_DEFAULTS = {'folder_id': None, 'tags': [], 'hierarchy': False, 'auto_export': True}
-PREFERENCE_DEFAULTS = {'theme': 'light', 'layout': 'grid', 'thumbnail': 260, 'inspector': True, 'sort': 'name'}
+PREFERENCE_DEFAULTS = {'theme': 'light', 'layout': 'grid', 'thumbnail': 260, 'inspector': True, 'sort': 'name', 'annotation_expanded': False}
 
 
 def asset_kind(filename):
@@ -155,6 +156,11 @@ class Store:
                     if not any(x['name'] == column for x in c.execute(f'PRAGMA table_info({table})')):
                         c.execute(f'ALTER TABLE {table} ADD COLUMN {column} {declaration}')
                 c.execute('PRAGMA user_version=6')
+            # Additive table: preserve schema version and pre-existing asset rows.
+            c.execute('''CREATE TABLE IF NOT EXISTS image_markup(
+                image_id TEXT REFERENCES images(id) ON DELETE CASCADE,blob TEXT NOT NULL,
+                document TEXT NOT NULL,revision INTEGER NOT NULL,updated TEXT NOT NULL,
+                PRIMARY KEY(image_id,blob))''')
             c.execute('INSERT OR IGNORE INTO meta VALUES (?,?)', ('store_id', uid()))
             self.store_id = c.execute('SELECT value FROM meta WHERE key=?', ('store_id',)).fetchone()[0]
 
@@ -474,6 +480,36 @@ class Store:
                       (*values.values(), now(), image_id))
             self.bump(c, image['library_id'])
 
+    def markup(self, image_id):
+        with self.db() as c:
+            image = self.require(c, 'images', image_id)
+            row = c.execute('SELECT * FROM image_markup WHERE image_id=? AND blob=?', (image_id,image['blob'])).fetchone()
+            return {'blob':image['blob'], 'revision':row['revision'] if row else 0,
+                    'document':json.loads(row['document']) if row else None}
+
+    def save_markup(self, image_id, blob, revision, document):
+        validate_document(document)
+        if type(revision) is not int or revision < 0:
+            raise ValueError('invalid markup revision')
+        with self.db() as c:
+            c.execute('BEGIN IMMEDIATE')
+            image = self.require(c, 'images', image_id)
+            if asset_kind(json.loads(image['metadata'])['filename']) != 'image':
+                raise ValueError('markup requires an image')
+            if image['blob'] != blob:
+                raise MarkupConflict('图片内容已更新；请导出当前标注，再重新打开图片。')
+            row = c.execute('SELECT * FROM image_markup WHERE image_id=? AND blob=?', (image_id,blob)).fetchone()
+            if revision != (row['revision'] if row else 0):
+                raise MarkupConflict('标注已有新版本；请导出当前标注，再重新打开图片，避免覆盖。')
+            if row:
+                prior = json.loads(row['document'])
+                if (prior['width'],prior['height']) != (document['width'],document['height']):
+                    raise ValueError('markup image dimensions changed')
+            c.execute('INSERT OR REPLACE INTO image_markup VALUES (?,?,?,?,?)',
+                      (image_id,blob,encoded(document),revision+1,now()))
+            self.bump(c,image['library_id'])
+            return {'blob':blob,'revision':revision+1}
+
     def set_group(self, lid, group, patch):
         if not isinstance(patch, dict) or not patch or set(patch) - {'favorite', 'note'}:
             raise ValueError('group patch supports favorite, note')
@@ -641,7 +677,7 @@ class Store:
                 raise ValueError('invalid display preference')
             if key == 'sort' and value not in ('name', 'updated', 'size', 'kind'):
                 raise ValueError('invalid sort order')
-            if key == 'inspector':
+            if key in ('inspector','annotation_expanded'):
                 boolean(value)
         with self.db() as c:
             row = c.execute("SELECT value FROM meta WHERE key='preferences'").fetchone()
@@ -1062,6 +1098,7 @@ class Store:
                 content = self.blob_path(r['blob']).read_bytes()
                 mime = gallery.MIMES.get(Path(r['filename']).suffix.lower(), 'application/octet-stream')
                 meta = {k: v for k, v in r.items() if k not in ('blob', 'url', 'version_count', 'preferred_source_path')}
+                meta['markup'] = self.markup(r['id'])['document']
                 group = group_notes.get((r['library_id'], r['group']), {})
                 row = {**meta, 'fields': {**meta.get('fields', {}), '个人收藏': '已收藏' if r['favorite'] else '未收藏',
                                         '隐藏状态': '已隐藏' if r['hidden'] else '可见', '图库': libs[r['library_id']]['name']},
@@ -1091,7 +1128,10 @@ class Store:
             folder.mkdir()
             path = folder / 'index.html'
             safe_json = encoded(payload).replace('<', '\\u003c').replace('&', '\\u0026')
-            path.write_text(gallery.TEMPLATE.read_text().replace('<!-- CATALOG_JSON -->', safe_json))
+            tools = '<style>' + (ASSETS / 'image-tools.css').read_text() + '</style>'
+            for name in ('image-tools-core.js','image-tools.js'):
+                tools += '<script>' + (ASSETS / name).read_text() + '</script>'
+            path.write_text(gallery.TEMPLATE.read_text().replace('<!-- IMAGE_TOOLS -->', tools).replace('<!-- CATALOG_JSON -->', safe_json))
             revisions = {l['id']: l['revision'] for l in state['libraries'] if not library_id or l['id'] == library_id}
             receipt = {'id': eid, 'created': now(), 'library_id': library_id, 'folder_id': folder_id,
                        'include_hidden': bool(include_hidden), 'count': len(rows), 'path': str(path),
@@ -1149,7 +1189,7 @@ def make_server(store, port=0):
                                      extra={'Content-Security-Policy': "sandbox; default-src 'none'"})
                 if path == '/logo.png':
                     return self.send((ASSETS / 'icon.png').read_bytes(), 'image/png')
-                if path in ('/workspace.css', '/workspace.js', '/workspace-core.js', '/settings.js'):
+                if path in ('/workspace.css', '/workspace.js', '/workspace-core.js', '/settings.js', '/image-tools.css', '/image-tools-core.js', '/image-tools.js'):
                     return self.send((ASSETS / path[1:]).read_bytes(), 'text/css' if path.endswith('.css') else 'application/javascript')
                 if path == '/health':
                     return self.send(encoded({'store_id': store.store_id, 'version': VERSION, 'pid':os.getpid()}))
@@ -1157,6 +1197,10 @@ def make_server(store, port=0):
                     if self.headers.get('X-Viewer-Token') != token:
                         return self.send(encoded({'error': 'token required'}), code=403)
                     return self.send(encoded(store.state()))
+                if path == '/api/markup':
+                    if self.headers.get('X-Viewer-Token') != token:
+                        return self.send(encoded({'error':'token required'}),code=403)
+                    return self.send(encoded(store.markup(parse_qs(urlsplit(self.path).query).get('id',[''])[0])))
                 if path == '/api/storage':
                     if self.headers.get('X-Viewer-Token') != token:
                         return self.send(encoded({'error':'token required'}),code=403)
@@ -1193,7 +1237,9 @@ def make_server(store, port=0):
                     raise ValueError('expected JSON object')
                 path = urlsplit(self.path).path
                 result = {'ok': True}
-                if path == '/api/image':
+                if path == '/api/markup':
+                    result = store.save_markup(body['id'],body['blob'],body['revision'],body['document'])
+                elif path == '/api/image':
                     store.annotate(body['id'], body['patch'])
                 elif path == '/api/group':
                     store.set_group(body['library_id'], body['name'], body['patch'])
@@ -1333,6 +1379,8 @@ def make_server(store, port=0):
                 else:
                     return self.send(encoded({'error': 'not found'}), code=404)
                 return self.send(encoded(result))
+            except MarkupConflict as exc:
+                return self.send(encoded({'error':str(exc)}),code=409)
             except (ValueError, KeyError, TypeError, OSError, sqlite3.Error, subprocess.SubprocessError, binascii.Error) as exc:
                 return self.send(encoded({'error': str(exc)}), code=400)
 

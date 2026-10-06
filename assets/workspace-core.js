@@ -20,6 +20,44 @@
     return result;
   }
   const isImage = row => row.asset_kind ? row.asset_kind === 'image' : /\.(svg|png|jpe?g|webp|gif|bmp)$/i.test(row.filename);
+  function activeFilters(view){
+    const result=[];
+    for(const key of ['search','kind','group'])if(String(view[key]||'').trim())result.push({kind:key,key,value:String(view[key]).trim()});
+    for(const [key,value] of Object.entries(view.filters||{}))if(value)result.push({kind:'field',key,value});
+    return result;
+  }
+  function removeFilter(view,token){
+    const result={...view,filters:{...view.filters},page:1};
+    if(token.kind==='field')delete result.filters[token.key];else result[token.key]='';
+    return result;
+  }
+  const widenSearch=view=>({...view,mode:'all',library:'',folder:'',group:'',filters:{},onlySelected:false,page:1});
+  function selectionSummary(ids,matching){
+    const picked=new Set(ids),visibleIDs=new Set(matching),visible=[...picked].filter(id=>visibleIDs.has(id)).length;
+    return {total:picked.size,visible,outside:picked.size-visible};
+  }
+  function gridNeighbor(ids,current,key,columns=1){
+    const index=Math.max(0,ids.indexOf(current));
+    if(key==='Home')return ids[0];if(key==='End')return ids[ids.length-1];
+    const next=index+({ArrowLeft:-1,ArrowRight:1,ArrowUp:-columns,ArrowDown:columns}[key]||0);
+    return ids[next]||ids[index];
+  }
+  const folderMembershipState=(count,total)=>({checked:total>0&&count===total,indeterminate:count>0&&count<total});
+  function comparisonColumns(count,width,height,ratios=[]){
+    if(count<=1||width<700)return 1;let best=2,bestScore=-1;
+    for(const cols of [...new Set([2,count])]){
+      const rows=Math.ceil(count/cols),cellWidth=(width-12*(cols-1))/cols;
+      if(cellWidth<190)continue;
+      const availableWidth=Math.max(1,cellWidth-56),availableHeight=Math.max(1,(height-12*(rows-1))/rows-146);
+      const score=Math.min(...Array.from({length:count},(_,index)=>{const ratio=ratios[index]||5/3,h=Math.min(availableHeight,availableWidth/ratio);return h*h*ratio;}));
+      if(score>bestScore){best=cols;bestScore=score;}
+    }
+    return best;
+  }
+  function comparisonRows(rows,clicked){
+    const unique=[...new Map([...rows,...(clicked?[clicked]:[])].filter(Boolean).map(row=>[row.id,row])).values()];
+    return unique.length>=2&&unique.length<=4&&unique.every(isImage)?unique:[];
+  }
   function matches(row, query) {
     const haystack = [row.title,row.filename,row.relative_path,row.note,row.caption,row.group,...row.tags||[],...Object.values(row.fields||{})].join(' ').toLocaleLowerCase();
     return (query.search||'').toLocaleLowerCase().split(/\s+/).filter(Boolean).every(w=>haystack.includes(w))
@@ -34,5 +72,5 @@
   const sameImportOptions = (a={},b={}) => (a.folder_id||null)===(b.folder_id||null)
     && JSON.stringify(a.tags||[])===JSON.stringify(b.tags||[])
     && Boolean(a.hierarchy)===Boolean(b.hierarchy) && (a.auto_export!==false)===(b.auto_export!==false);
-  return {descendants, rangeSelection, isImage, matches, isSettingsShortcut, sameImportOptions};
+  return {descendants, rangeSelection, isImage, activeFilters, removeFilter, widenSearch, selectionSummary, gridNeighbor, folderMembershipState, comparisonColumns, comparisonRows, matches, isSettingsShortcut, sameImportOptions};
 });

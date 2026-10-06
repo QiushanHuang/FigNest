@@ -1,0 +1,2 @@
+# Preserve upstream license formatting without whitespace lint errors.
+assets/licenses/* -whitespace

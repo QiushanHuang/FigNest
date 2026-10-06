@@ -9,10 +9,10 @@
 
 [![Release](https://img.shields.io/github/v/release/QiushanHuang/FigNest)](https://github.com/QiushanHuang/FigNest/releases)
 [![CI](https://github.com/QiushanHuang/FigNest/actions/workflows/ci.yml/badge.svg)](https://github.com/QiushanHuang/FigNest/actions/workflows/ci.yml)
-[![macOS](https://img.shields.io/badge/macOS-13%2B%20%C2%B7%20Apple%20Silicon-555)](https://github.com/QiushanHuang/FigNest/releases)
+[![macOS](https://img.shields.io/badge/macOS-27%2B%20%C2%B7%20Apple%20Silicon-555)](https://github.com/QiushanHuang/FigNest/releases)
 [![Local first](https://img.shields.io/badge/Data-Local%20first-356592)](#your-files-and-your-library)
 
-**Organize, compare, and share figures—with their context.**
+**Organize, inspect, annotate, and share figures—with their context.**
 
 A folder can tell you where a picture lives. It rarely tells you why you saved it,
 which version matters, or what you wanted to compare it with.
@@ -47,8 +47,9 @@ comparison you can reopen or share.
 | Collect a directory of figures | **Import** → choose files or a folder; enable **Keep folder hierarchy** if useful |
 | Build a presentation shortlist | Select items → **Folder** or **Favorite** |
 | Keep a view up to date | Create a smart folder using keywords, tags, type, or metadata |
-| Compare across projects | Select images in one library, switch to another, then **Compare** |
-| Return to the source | Click an item's title to reveal its unchanged source in Finder, or its retained library copy |
+| Compare across projects | Select 2–4 images, then right-click → **并排比较 / Compare**, or use the persistent selection bar |
+| Inspect or annotate details | Open a preview → box zoom, pixel ruler, reference lines and annotation tools |
+| Preview or return to the source | Click the title to preview; use **More / right-click → Show in Finder** to locate the source or retained copy |
 | Share a prepared collection | **Export** → select a library/folder → generate a new HTML snapshot |
 | Set up your workspace | **Settings** in the toolbar, or **⌘,** in the Mac app |
 
@@ -56,12 +57,47 @@ comparison you can reopen or share.
 
 *Screenshots use synthetic demonstration figures. The current interface uses Chinese labels; this guide covers the workflow in English and Chinese.*
 
+## New in 4.3: fewer steps from finding to inspecting
+
+Search shows its current scope and active filters. Remove a filter chip, clear all
+filters, or search all assets with the same keywords when a result is empty.
+Selections stay available in the bottom action bar as you scroll; **View selected**
+shows items from every scope, and returns you to your previous view. The folder
+picker supports search and shows when only some selected items belong to a folder.
+
+Open an image by its title, preview button, double-click, or Enter/Space. In a
+comparison, click the image you want to work on: a blue outline and current-image
+label identify the target. Choose automatic, one-row or two-column layout (two columns for 3–4 images);
+optionally link zoom and pan by relative image position. **View alone** and
+**Return to comparison** preserve the selected group and layout.
+
+![Four-image comparison with a shared observation toolbar and pixel rulers](docs/images/comparison-4.3.png)
+
+### Inspect first, annotate when needed
+
+Pan, box zoom, pixel distance, fit, 100%, rulers and annotation visibility remain
+available when the annotation panel is collapsed. Open **标注工具 / Annotation tools**
+for text, arrows, lines, rectangles, ellipses, freehand strokes, and horizontal or
+vertical reference lines. Drawing shortcuts expand the panel automatically.
+Choose whether it opens by default in the panel or **Settings → Display**.
+
+**Clear annotations** removes all marks on the current image in one action and
+can be undone. Save explicitly with **Save annotations / ⌘S** (Ctrl+S in the
+browser); comparison also offers **Save all**. The save state stays visible while
+you move or zoom. Unsaved edits are guarded on closing, navigation and native
+quit/reload. Save conflicts retain your edits and show an error.
+
+Export the marked image as PNG or its editable annotation data as JSON. New
+offline HTML snapshots include saved marks for viewing. Measurements use the
+decoded image's original pixel coordinates; they do not calibrate physical units.
+Annotations are stored separately and do not rewrite source images.
+
 ## Install
 
-Download **FigNest v4.1.0 for macOS Apple Silicon** from
+Download **FigNest v4.3.0 for macOS Apple Silicon** from
 [Releases](https://github.com/QiushanHuang/FigNest/releases/latest).
 
-1. Open the DMG, then drag **图匣.app** into Applications. A ZIP is also available.
+1. On macOS 27+ with Apple Silicon, open the DMG and drag **图匣.app** into Applications. A ZIP is also available.
 2. Open FigNest and import your first library. The packaged app includes its runtime; no Python installation is needed.
 3. Use **FigNest → Settings…** or **⌘,** to set the appearance, layout, import rules, and export behavior.
 
@@ -69,7 +105,7 @@ The package is locally ad-hoc signed and **not Apple-notarized**. If macOS asks
 for approval on first launch, verify that you downloaded it from this repository,
 then follow Apple's [opening an app from an unidentified developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac) instructions.
 
-To update, finish imports/exports and close the live viewers, then stop this
+To update, save image annotations, finish imports/exports and close the live viewers, then stop this
 library's background service before replacing the app:
 
 ```sh
@@ -144,7 +180,10 @@ For repeat imports, retain the returned library ID. Configure metadata rules wit
 | Search | ⌘K / ⌘F |
 | Select all filtered items | ⌘A |
 | Select a continuous range | Shift + select |
-| Preview | Space or double-click |
+| Browse / preview | Arrow keys, Home/End; Enter/Space, title click or double-click |
+| Pan / box zoom / pixel distance | V / Z / R; hold Space to pan temporarily |
+| Save image annotations | ⌘S / Ctrl+S, including while typing annotation text |
+| Undo / redo marks | ⌘Z / ⌘⇧Z (Ctrl equivalents in the browser) |
 | Compare selected images | ⌘Enter |
 | Move selected items to recovery | ⌘Backspace |
 | Close preview / clear selection | Escape |
@@ -175,11 +214,13 @@ HTML exports remain in their own locations.
 ## Guides and development
 
 [User guide / 使用指南](docs/USER_GUIDE.md) · [Automation](docs/automation.md) ·
-[Release notes](docs/releases/v4.1.0.md) · [Changelog](CHANGELOG.md)
+[Release notes](docs/releases/v4.3.0.md) · [Changelog](CHANGELOG.md)
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/test_workspace.js
+node tests/test_image_tools.js
+node tests/test_ux.js
 node tests/test_settings.js
 node tests/test_drop.js
 ```
@@ -191,7 +232,9 @@ python3 -m pip install pyinstaller
 python3 native/build_app.py --output dist/图匣.app
 ```
 
-The current builder targets Apple Silicon. See [contributing](CONTRIBUTING.md)
+The current binary package requires macOS 27+; the source browser edition needs Python 3.10+.
+The native wrapper targets macOS 13+, but a source build also inherits its bundled
+Python and library requirements. The builder records the highest required OS version. See [contributing](CONTRIBUTING.md)
 for the source layout and validation checklist.
 
 Created and maintained by [**Qiushan** · **@QiushanHuang**](https://github.com/QiushanHuang).
@@ -208,7 +251,7 @@ See [contributors](CONTRIBUTORS.md) and [third-party notices](THIRD_PARTY_NOTICE
 [![English](https://img.shields.io/badge/Language-English-24292f)](#english)
 [![简体中文](https://img.shields.io/badge/语言-简体中文-356592)](#中文)
 
-**整理、比较、带着备注分享图片。**
+**整理、细看、标注，带着上下文分享图片。**
 
 文件夹能告诉你图片放在哪里，却很难留下“为什么保存它、哪个版本重要、准备和哪张图比较”。
 FigNest 把分散的图片整理成可以持续使用的图库：收集素材、保留说明、跨项目对照，
@@ -240,8 +283,9 @@ FigNest 把分散的图片整理成可以持续使用的图库：收集素材、
 | 把一个目录收进来 | **导入** → 选择文件或文件夹，可勾选“保留目录层级” |
 | 挑出汇报重点 | 多选 → **文件夹**或**收藏** |
 | 让一组内容自动更新 | 用关键词、标签、类型和参数创建智能文件夹 |
-| 跨项目比较 | 在一个图库选图，再切换图库继续选择，点击**并排比较** |
-| 回到原始文件 | 点击素材标题，在 Finder 定位未改变的源文件；源文件不可用时定位图库副本 |
+| 跨项目比较 | 选择 2–4 张图，通过**右键 → 并排比较**或底部常驻选择栏进入 |
+| 细看和标注 | 打开预览，使用框选放大、像素标尺、参考线和标注工具 |
+| 预览或回到原文件 | 点击标题预览；通过**更多 / 右键 → 在 Finder 中显示**定位源文件或图库副本 |
 | 分享整理好的内容 | **导出** → 选择图库或文件夹 → 生成新的 HTML 快照 |
 | 调整常用选项 | 右上角**设置**，或 Mac 应用中的 **⌘,** |
 
@@ -249,19 +293,45 @@ FigNest 把分散的图片整理成可以持续使用的图库：收集素材、
 
 *截图使用独立制作的演示图，不包含真实研究数据。*
 
+### 4.3 新功能：从找图到细看，减少重复操作
+
+搜索会显示当前范围和已启用的筛选条件。可以移除单个筛选、清除全部条件，
+无结果时保留关键词改为搜索全部素材。底部选择栏在滚动时常驻，**查看已选**
+集中显示不同范围的选择，返回后恢复原来的页面。文件夹选择支持搜索，并显示部分成员状态。
+
+点击标题、预览按钮、双击或 Enter / 空格即可看图。比较时点击要操作的图片，
+蓝色边框与“当前图”明确显示目标。可选自动、一行、两列布局（两列适用于 3–4 张图），按需开启相对缩放和平移联动；
+**单独查看 → 返回比较**保留同一组图片和布局。
+
+![四图比较、共享观察工具和像素标尺](docs/images/comparison-4.3.png)
+
+#### 观察工具常驻，标注按需展开
+
+平移、框选放大、像素测距、适应窗口、100%、像素标尺和显示标注保持常驻。
+展开**标注工具**后，可以添加文字、箭头、直线、矩形、椭圆、画笔和水平/垂直参考线。
+绘制快捷键会自动展开面板；在面板或**设置 → 显示**中可选择是否默认展开。
+
+**清除标注**一键清空当前图片的标记，支持撤销。点击**保存标注**或按 **⌘S**
+（浏览器为 Ctrl+S）明确保存，比较界面也支持**保存全部**。
+移动图片和缩放不会覆盖保存状态；关闭、切换图片、原生退出/重新载入前会保护未保存修改。
+遇到保存冲突时保留编辑内容并显示错误。
+
+可导出带标注的 PNG 或可编辑的标注 JSON，新导出的离线 HTML 会显示已保存的标注。
+测量基于解码图片的原始像素坐标，不做物理单位标定。标注单独保存，不改写原始图片。
+
 ### 安装
 
 从 [Releases](https://github.com/QiushanHuang/FigNest/releases/latest) 下载
-**FigNest v4.1.0 · macOS Apple Silicon**。
+**FigNest v4.3.0 · macOS Apple Silicon**。
 
-1. 打开 DMG，将 **图匣.app** 拖入 Applications，也可以下载 ZIP。
+1. 在 macOS 27+ 的 Apple Silicon Mac 上打开 DMG，将 **图匣.app** 拖入 Applications，也可以下载 ZIP。
 2. 打开 FigNest，导入第一个图库。安装包自带运行环境，无需安装 Python。
 3. 在菜单 **FigNest → 设置…** 或通过 **⌘,** 调整外观、布局、导入规则和导出行为。
 
 安装包采用本地 ad-hoc 签名，**尚未经过 Apple 公证**。首次打开如需系统确认，
 请先核对下载来源，再按 Apple 的[打开来自未识别开发者的 App](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac)说明操作。
 
-更新时先完成导入/导出并关闭实时看图窗口，再停止该图库的后台服务后替换应用：
+更新时先保存图片标注、完成导入/导出并关闭实时看图窗口，再停止该图库的后台服务后替换应用：
 
 ```sh
 "/Applications/图匣.app/Contents/Resources/backend/library-backend" stop
@@ -332,7 +402,10 @@ python3 scripts/library.py export --library-id YOUR_LIBRARY_ID
 | 搜索 | ⌘K / ⌘F |
 | 选择当前筛选结果 | ⌘A |
 | 连续多选 | Shift + 选择 |
-| 预览 | 空格或双击 |
+| 浏览 / 预览 | 方向键、Home/End；Enter / 空格、点击标题或双击 |
+| 平移 / 框选放大 / 像素测距 | V / Z / R；按住空格临时平移 |
+| 保存图片标注 | ⌘S / Ctrl+S，文字输入框内也可用 |
+| 撤销 / 重做标注 | ⌘Z / ⌘⇧Z，浏览器对应 Ctrl |
 | 比较已选图片 | ⌘Enter |
 | 移入回收区 | ⌘Backspace |
 | 关闭预览 / 取消选择 | Escape |
@@ -362,11 +435,13 @@ FigNest 保存托管副本，源文件暂时不可用时仍可查看图库内容
 ### 文档与开发
 
 [完整使用指南](docs/USER_GUIDE.md#中文) · [自动化接口](docs/automation.md) ·
-[本版更新](docs/releases/v4.1.0.md#中文) · [更新记录](CHANGELOG.md)
+[本版更新](docs/releases/v4.3.0.md#中文) · [更新记录](CHANGELOG.md)
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
 node tests/test_workspace.js
+node tests/test_image_tools.js
+node tests/test_ux.js
 node tests/test_settings.js
 node tests/test_drop.js
 ```
@@ -378,7 +453,9 @@ python3 -m pip install pyinstaller
 python3 native/build_app.py --output dist/图匣.app
 ```
 
-当前构建器面向 Apple Silicon。源代码结构和验收项目见[参与开发](CONTRIBUTING.md)。
+本次二进制包需要 macOS 27+；源码网页版需要 Python 3.10+。原生窗口面向 macOS 13+，
+自行打包还受所选 Python 和依赖库的系统要求影响，构建器会记录其中最高要求。
+源代码结构和验收项目见[参与开发](CONTRIBUTING.md)。
 
 由 [**Qiushan** · **@QiushanHuang**](https://github.com/QiushanHuang) 创建和维护。
 查看[贡献者](CONTRIBUTORS.md)及[第三方声明](THIRD_PARTY_NOTICES.md)。
