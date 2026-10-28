@@ -1,4 +1,4 @@
-FigNest 4.3.0 · 图匣
+FigNest 4.4.0 · 图匣
 
 ENGLISH
 1. Drag 图匣.app into Applications, then open it.

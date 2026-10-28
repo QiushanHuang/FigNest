@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.4.0 — 2026-10-28
+
+- Simplify the library, browse, import and offline-snapshot layouts; show the enabled inspector after selection in wide windows, and keep import defaults and destructive consequences visible.
+- Make nested libraries and folders accessible in narrow windows; retain keyboard focus, control names, selection state and visible focus indicators.
+- Clarify whether comparison zoom applies to the current image or every image. Hide offline filters with a single possible value and unavailable one-item comparison controls.
+- Prevent saving a smart folder from a scope its rules cannot express: manual or smart folders, Unfiled, Duplicates, Hidden and the selected-items view.
+- Preserve database schema 6, existing assets and older offline exports. New snapshots use the updated presentation.
+
+### 中文
+
+- 精简图库、浏览、导入和离线快照界面；宽窗口启用详情时选中素材后显示，保留导入默认项与危险操作后果提示。
+- 窄窗口可进入图库和多级文件夹；保留键盘焦点、控件名称、选择状态及可见焦点指示。
+- 明确比较缩放作用于当前图还是全部图；离线页收起单一取值的筛选器和单素材时无法使用的比较操作。
+- 不再从智能规则无法表达的范围保存筛选，包括文件夹、未分类、重复内容、已隐藏及已选素材视图。
+- 数据库 schema 6、既有素材及旧离线导出保持不变；新版展示用于新生成的快照。
+
 ## 4.3.0 — 2026-10-06
 
 Public update from 4.1.0, including the intervening local image-tool builds.

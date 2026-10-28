@@ -154,7 +154,8 @@ class GalleryTests(unittest.TestCase):
             url = process.stdout.readline().strip()
             self.assertTrue(url.startswith('http://127.0.0.1:'))
             with urllib.request.urlopen(url, timeout=5) as response:
-                self.assertIn(b'IMAGE COLLECTION', response.read())
+                self.assertEqual(response.headers.get_content_type(), 'text/html')
+                self.assertEqual(response.read(), (self.output / 'index.html').read_bytes())
             with self.assertRaises(urllib.error.HTTPError) as caught:
                 urllib.request.urlopen(url + 'manifest.json', timeout=5)
             self.assertEqual(caught.exception.code, 404)

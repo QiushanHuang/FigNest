@@ -53,9 +53,21 @@ comparison you can reopen or share.
 | Share a prepared collection | **Export** → select a library/folder → generate a new HTML snapshot |
 | Set up your workspace | **Settings** in the toolbar, or **⌘,** in the Mac app |
 
-![FigNest workspace with nested folders, figure selection and an inspector](docs/images/workspace.jpg)
+![FigNest browsing a synthetic figure library](docs/images/workspace.jpg)
 
 *Screenshots use synthetic demonstration figures. The current interface uses Chinese labels; this guide covers the workflow in English and Chinese.*
+
+## New in 4.4: a clearer workspace
+
+The library and import screens put the next action first. In a wide window the enabled detail panel opens
+when an item is selected; in a narrow window, use **详情 / Details** to open it.
+On narrow windows, expand the navigation to reach libraries and nested folders.
+Offline snapshots omit filters with only one possible value and comparison controls
+when there is only one item.
+
+Saving a filter as a smart folder is available in All assets, a library and
+Favorites. Folder membership, Unfiled, Duplicates and Hidden cannot currently be
+expressed by a smart-folder rule, so those views no longer offer a misleading save.
 
 ## New in 4.3: fewer steps from finding to inspecting
 
@@ -94,7 +106,7 @@ Annotations are stored separately and do not rewrite source images.
 
 ## Install
 
-Download **FigNest v4.3.0 for macOS Apple Silicon** from
+Download **FigNest v4.4.0 for macOS Apple Silicon** from
 [Releases](https://github.com/QiushanHuang/FigNest/releases/latest).
 
 1. On macOS 27+ with Apple Silicon, open the DMG and drag **图匣.app** into Applications. A ZIP is also available.
@@ -214,7 +226,7 @@ HTML exports remain in their own locations.
 ## Guides and development
 
 [User guide / 使用指南](docs/USER_GUIDE.md) · [Automation](docs/automation.md) ·
-[Release notes](docs/releases/v4.3.0.md) · [Changelog](CHANGELOG.md)
+[Release notes](docs/releases/v4.4.0.md) · [Changelog](CHANGELOG.md)
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'
@@ -289,9 +301,18 @@ FigNest 把分散的图片整理成可以持续使用的图库：收集素材、
 | 分享整理好的内容 | **导出** → 选择图库或文件夹 → 生成新的 HTML 快照 |
 | 调整常用选项 | 右上角**设置**，或 Mac 应用中的 **⌘,** |
 
-![FigNest 的目录、图片浏览与详情面板](docs/images/workspace.jpg)
+![FigNest 的合成图库浏览界面](docs/images/workspace.jpg)
 
 *截图使用独立制作的演示图，不包含真实研究数据。*
+
+### 4.4 更新：更清晰的工作区
+
+图库和导入界面突出下一步操作；宽窗口中选中素材后显示已启用的详情面板，窄窗口可点击**详情**打开。
+窄窗口可展开导航，进入图库和多级文件夹。离线快照会收起只有一个取值的筛选器；
+只有一份素材时不显示无法使用的比较入口。
+
+在全部素材、图库和收藏中可以将筛选保存为智能文件夹。文件夹成员、未分类、
+重复内容和已隐藏范围暂不能由智能规则表达，因此这些视图不再提供会丢失范围的保存操作。
 
 ### 4.3 新功能：从找图到细看，减少重复操作
 
@@ -322,7 +343,7 @@ FigNest 把分散的图片整理成可以持续使用的图库：收集素材、
 ### 安装
 
 从 [Releases](https://github.com/QiushanHuang/FigNest/releases/latest) 下载
-**FigNest v4.3.0 · macOS Apple Silicon**。
+**FigNest v4.4.0 · macOS Apple Silicon**。
 
 1. 在 macOS 27+ 的 Apple Silicon Mac 上打开 DMG，将 **图匣.app** 拖入 Applications，也可以下载 ZIP。
 2. 打开 FigNest，导入第一个图库。安装包自带运行环境，无需安装 Python。
@@ -435,7 +456,7 @@ FigNest 保存托管副本，源文件暂时不可用时仍可查看图库内容
 ### 文档与开发
 
 [完整使用指南](docs/USER_GUIDE.md#中文) · [自动化接口](docs/automation.md) ·
-[本版更新](docs/releases/v4.3.0.md#中文) · [更新记录](CHANGELOG.md)
+[本版更新](docs/releases/v4.4.0.md#中文) · [更新记录](CHANGELOG.md)
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_*.py'

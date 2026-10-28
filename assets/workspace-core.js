@@ -32,6 +32,8 @@
     return result;
   }
   const widenSearch=view=>({...view,mode:'all',library:'',folder:'',group:'',filters:{},onlySelected:false,page:1});
+  // Smart-folder queries cannot encode manual-folder membership or these derived views.
+  const canSaveBrowse=view=>!view.onlySelected&&!view.folder&&['all','library','favorites'].includes(view.mode);
   function selectionSummary(ids,matching){
     const picked=new Set(ids),visibleIDs=new Set(matching),visible=[...picked].filter(id=>visibleIDs.has(id)).length;
     return {total:picked.size,visible,outside:picked.size-visible};
@@ -72,5 +74,5 @@
   const sameImportOptions = (a={},b={}) => (a.folder_id||null)===(b.folder_id||null)
     && JSON.stringify(a.tags||[])===JSON.stringify(b.tags||[])
     && Boolean(a.hierarchy)===Boolean(b.hierarchy) && (a.auto_export!==false)===(b.auto_export!==false);
-  return {descendants, rangeSelection, isImage, activeFilters, removeFilter, widenSearch, selectionSummary, gridNeighbor, folderMembershipState, comparisonColumns, comparisonRows, matches, isSettingsShortcut, sameImportOptions};
+  return {descendants, rangeSelection, isImage, activeFilters, removeFilter, widenSearch, canSaveBrowse, selectionSummary, gridNeighbor, folderMembershipState, comparisonColumns, comparisonRows, matches, isSettingsShortcut, sameImportOptions};
 });

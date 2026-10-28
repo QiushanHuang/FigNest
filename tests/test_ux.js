@@ -31,3 +31,11 @@ assert.equal(core.comparisonColumns(4,1200,520,[5/3,5/3,5/3,5/3]),4);
 assert.equal(core.comparisonColumns(4,1200,520,[3,3,3,3]),2,'wide images need taller two-row cells');
 assert.equal(core.comparisonColumns(3,1200,520,[5/3,5/3,5/3]),3);
 assert.equal(core.comparisonColumns(4,390,640,[5/3,5/3,5/3,5/3]),1,'narrow view scrolls readable cells');
+
+// A saved smart folder must preserve the scope the user is currently viewing.
+assert.equal(typeof core.canSaveBrowse,'function','saved browse scope eligibility is missing');
+for(const mode of ['all','library','favorites'])assert.equal(core.canSaveBrowse({mode,folder:'',onlySelected:false}),true,mode);
+for(const mode of ['folder','unfiled','duplicates','hidden'])assert.equal(core.canSaveBrowse({mode,folder:mode==='folder'?'folder-a':'',onlySelected:false}),false,mode);
+assert.equal(core.canSaveBrowse({mode:'all',folder:'',onlySelected:true}),false,'a selection cannot be represented by a smart folder');
+assert.equal(core.canSaveBrowse({mode:'all',folder:'folder-a',onlySelected:false}),false,'a folder scope must not be silently omitted');
+console.log('UX: smart folders can only be saved from representable browse scopes PASS');

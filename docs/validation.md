@@ -1,3 +1,14 @@
+# Release acceptance — 4.4.0
+
+Verified on macOS 27.0.1 / Apple Silicon on 2026-10-28.
+
+- The live browser was checked with isolated synthetic libraries for initial import, search recovery, selection and folder membership, two-image comparison, annotation leave protection, light/dark appearance and narrow-window navigation. The offline snapshot was checked with one and multiple items.
+- The packaged native candidate was opened against a separate synthetic store. Browsing, selection, comparison, the native Settings menu and the accessible name of linked views were checked. The final bundle's signature, version, minimum macOS version and ten bundled UI assets were verified.
+- After installation, the existing database matched the pre-update backup across all tables; SQLite integrity and foreign-key checks passed. The previous app and a complete data-directory copy were retained for recovery.
+- Locally, 69 Python tests and five Node suites passed. This focused check is not a full screen-reader certification or performance benchmark. The package is Apple Silicon / macOS 27+, ad-hoc signed and not Apple-notarized.
+
+---
+
 # Release acceptance — 4.3.0
 
 Verified on macOS 27 / Apple Silicon on 2026-10-06 with isolated synthetic libraries, then the installed app was checked against an existing local store.

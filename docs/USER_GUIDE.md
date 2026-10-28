@@ -3,23 +3,23 @@
 
 [English](#english) · [简体中文](#中文)
 
-The 4.3.0 Mac download requires Apple Silicon and macOS 27+ and includes its runtime.
+The 4.4.0 Mac download requires Apple Silicon and macOS 27+ and includes its runtime.
 The source browser edition needs Python 3.10+.
 
 ## 1. Start a library
 
 Click **＋ 导入 / Import**. Choose individual files or a directory, select an existing library or name a new one, then import. The result reports new, updated and skipped items. Reimport into the same library to retain its curation.
 
-Choose **Keep directory hierarchy** to create virtual folders matching the selected directory structure. Assign an existing folder to keep a particular project under a stable parent. Add comma-separated tags and choose whether each import should also generate an offline HTML.
+Expand **Import options** and choose **Keep directory hierarchy** to create virtual folders matching the selected directory structure. Assign an existing folder to keep a particular project under a stable parent. Add comma-separated tags and choose whether each import should also generate an offline HTML.
 
 ## 2. Organize and find
 
-- Use the sidebar **＋** beside Folders to create a manual or smart folder. Choose a parent to make a subfolder.
-- Click a thumbnail once to select and inspect, or double-click/press Space to preview. Clicking the title opens the preview. Use More or the right-click menu for Finder access.
+- Use the sidebar **＋** beside Folders to create a manual or smart folder. Choose a parent to make a subfolder. In a narrow window, expand the navigation control to reach libraries and folders.
+- Click a thumbnail once to select; the enabled detail panel opens in a wide window. In a narrow window, click Details. Double-click/press Space to preview. Clicking the title opens the preview. Use More or the right-click menu for Finder access.
 - Check boxes or use ⌘A for the current filtered result. Shift-select covers a continuous range. Selection remains when switching libraries.
 - The bottom selection bar stays available while scrolling. View all selected items, including ones outside the current filters, then return to your original view. Use folders, tags, favorites or More for batch actions. The folder picker supports search and partial-membership feedback.
 - Right-click a card or folder for contextual actions. Compare appears when 2–4 selected items are images. Permanent removal is kept in recovery.
-- Search matches titles, paths, notes, tags and metadata within the displayed scope. Remove filter chips or clear filters; an empty result can search all assets with the same keywords. Use **保存筛选 / Save filters** to create a smart folder.
+- Search matches titles, paths, notes, tags and metadata within the displayed scope. Remove filter chips or clear filters; an empty result can search all assets with the same keywords. Use **保存筛选 / Save filters** in All assets, a library or Favorites to create a smart folder. Folder membership, Unfiled, Duplicates and Hidden cannot currently be represented by a saved filter.
 - Arrow keys and Home/End move between visible items; Enter/Space previews the focused item.
 - Smart folders match all their selected conditions; manual membership is managed separately. The duplicate-content view indicates identical bytes, not visually similar images.
 
@@ -39,7 +39,7 @@ Open **Notes and attachments** from the inspector or context menu. Save the note
 
 ## 4. Settings
 
-The toolbar button, sidebar button and native **FigNest → Settings… / ⌘,** reach the same settings panel.
+The toolbar button and native **FigNest → Settings… / ⌘,** reach the same settings panel.
 
 | Tab | Options |
 | --- | --- |
@@ -74,23 +74,23 @@ Run `python3 scripts/library.py --help`. Use `state` for exact IDs, `import` or 
 
 [English](#english) · [简体中文](#中文)
 
-4.3.0 Mac 下载包要求 Apple Silicon 与 macOS 27+，自带运行环境。
+4.4.0 Mac 下载包要求 Apple Silicon 与 macOS 27+，自带运行环境。
 源码网页版需要 Python 3.10+。
 
 ### 1. 建立图库
 
 点击**＋ 导入**，选择文件或目录，指定已有图库或填写新名称。导入结果会显示新增、更新和跳过数量。更新已有集合时请选择同一个图库，以保留之前的整理。
 
-“保留目录层级”会按所选目录生成虚拟文件夹。也可以指定一个稳定的父文件夹，添加逗号分隔的标签，并选择导入后是否自动生成 HTML。
+展开**导入选项**，可选择“保留目录层级”，按所选目录生成虚拟文件夹。也可以指定一个稳定的父文件夹，添加逗号分隔的标签，并选择导入后是否自动生成 HTML。
 
 ### 2. 整理和查找
 
-- 点击侧栏文件夹旁的 **＋**，建立手动或智能文件夹；选择上级目录即可创建子文件夹。
-- 单击缩略图选择并查看详情，点击标题、双击或空格预览。通过更多或右键菜单在 Finder 定位原文件或图库副本。
+- 点击侧栏文件夹旁的 **＋**，建立手动或智能文件夹；选择上级目录即可创建子文件夹。窄窗口中可展开导航进入图库和文件夹。
+- 单击缩略图选择；宽窗口启用详情时会显示面板，窄窗口可点击“详情”。点击标题、双击或空格预览。通过更多或右键菜单在 Finder 定位原文件或图库副本。
 - 通过复选框或 ⌘A 批量选择；Shift 连续多选。切换图库仍保留选择，方便跨项目比较。
 - 底部选择栏随滚动常驻，可查看筛选范围外的已选项，再返回原页面。支持文件夹、标签、收藏和更多批量操作；文件夹选择支持搜索与部分成员提示。
 - 图片与目录支持右键菜单。选中 2–4 张图片时可直接右键比较；永久删除入口留在回收区。
-- 搜索在所显示的范围内匹配标题、路径、备注、标签和参数。可移除筛选条目或清空条件；无结果时保留关键词搜索全部素材。**保存筛选**建立智能文件夹。
+- 搜索在所显示的范围内匹配标题、路径、备注、标签和参数。可移除筛选条目或清空条件；无结果时保留关键词搜索全部素材。在全部素材、图库或收藏中可用**保存筛选**建立智能文件夹；文件夹成员、未分类、重复内容和已隐藏范围目前不能保存为筛选条件。
 - 方向键与 Home/End 在可见素材中移动，Enter / 空格预览当前焦点项。
 - 智能文件夹要求同时满足选中的条件；手动分类单独管理。“重复内容”表示字节完全相同，不代表视觉相似。
 
@@ -110,7 +110,7 @@ Run `python3 scripts/library.py --help`. Use `state` for exact IDs, `import` or 
 
 ### 4. 设置
 
-右上角按钮、侧栏按钮和原生菜单 **FigNest → 设置… / ⌘,** 打开同一个设置面板。
+右上角按钮和原生菜单 **FigNest → 设置… / ⌘,** 打开同一个设置面板。
 
 | 分类 | 内容 |
 | --- | --- |
